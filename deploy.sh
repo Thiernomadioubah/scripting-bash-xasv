@@ -13,26 +13,27 @@
 
 #si option --create
 if [ "$1" == "--create" ];then
-    echo ""
-	echo " notre option est --create"
-	echo ""
 
+    USERNAME=$(whoami)
     nb_machine=1
     [ "$2" != "" ] && nb_machine=$2
 
-	docker run -tid --name $USERNAME-alpine alpine:latest
+    echo "Creation du/des conteneur(s)"
+    for i in $(seq 1 $nb_machine);do
+        docker run -tid --name $USERNAME-alpine-$i alpine:latest
+        echo "Conteneur $USERNAME-alpine-$i créé"
+    done
     
-    echo "J'ai créé ${nb_machine} containeur(s)"
+    # echo "J'ai créé ${nb_machine} containeur(s)"
 
 
 # si option --drop
 elif [ "$1" == "--drop" ];then
 
-    echo ""
-	echo " notre option est --drop"
-	echo ""
-
-    docker rm -f $USERNAME-alpine
+    
+	echo "Suppression du/des conteneur(s)"
+    docker rm -f $(docker ps | grep $USERNAME-alpine | awk '{print $1}') 
+    echo "Conteneur(s) supprimé(s)"
 
 # si option --start
 elif [ "$1" == "--start" ];then
