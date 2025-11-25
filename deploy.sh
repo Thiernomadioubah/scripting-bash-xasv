@@ -18,12 +18,20 @@ if [ "$1" == "--create" ];then
     nb_machine=1
     [ "$2" != "" ] && nb_machine=$2
 
+    # setting min/max
+	min=1
+	max=0
+
   # récupération de idmax
 	idmax=`docker ps -a --format '{{ .Names}}' | awk -F "-" -v user="$USER" '$0 ~ user"-alpine" {print $3}' | sort -r |head -1`
 
+	# redéfinition de min et max
+	min=$(($idmax + 1))
+	max=$(($idmax + $nb_machine))
+
 
     echo "Creation du/des conteneur(s)"
-    for i in $(seq 1 $nb_machine);do
+    for i in $(seq $min $max);do
         docker run -tid --name $USERNAME-alpine-$i alpine:latest
         echo "Conteneur $USERNAME-alpine-$i créé"
     done
@@ -34,17 +42,19 @@ if [ "$1" == "--create" ];then
 # si option --drop
 elif [ "$1" == "--drop" ];then
 
+	nb_cn=`docker ps -a --format '{{ .Names}}' | awk -F "-" -v user="$USER" '$0 ~ user"-alpine" {print $3}' | sort -r |head -1`
     
 	echo "Suppression du/des conteneur(s)"
     docker rm -f $(docker ps | grep $USERNAME-alpine | awk '{print $1}') 
-    echo "Conteneur(s) supprimé(s)"
+    echo "$nb_cn : Conteneur(s) supprimé(s)"
 
 # si option --start
 elif [ "$1" == "--start" ];then
   
-    echo ""
-	echo " notre option est --start"
-	echo ""
+   
+	echo "Redémarrage du/des conteneur(s)"
+    docker start $(docker ps -a | grep $USERNAME-alpine | awk '{print $1}')
+	echo "Fin du redémarrage"
 
 # si option --ansible
 elif [ "$1" == "--ansible" ];then
@@ -57,7 +67,11 @@ elif [ "$1" == "--ansible" ];then
 elif [ "$1" == "--infos" ];then
   
     echo ""
-	echo " notre option est --infos"
+    echo "Informations des conteneurs : "
+    echo ""
+	for conteneur in $(docker ps -a | grep $USERNAME-alpine | awk '{print $1}');do      
+		docker inspect -f '   => {{.Name}} - {{.NetworkSettings.IPAddress }}' $conteneur
+	done
 	echo ""
 
 # si aucune option affichage de l'aide
