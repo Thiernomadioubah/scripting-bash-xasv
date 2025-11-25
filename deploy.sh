@@ -11,18 +11,56 @@
 #
 ########################################################
 
+#si option --create
+if [ "$1" == "--create" ];then
+    echo ""
+	echo " notre option est --create"
+	echo ""
+
+# si option --drop
+elif [ "$1" == "--drop" ];then
+
+    echo ""
+	echo " notre option est --drop"
+	echo ""
+
+# si option --start
+elif [ "$1" == "--start" ];then
+  
+    echo ""
+	echo " notre option est --start"
+	echo ""
+
+# si option --ansible
+elif [ "$1" == "--ansible" ];then
+  
+    echo ""
+	echo " notre option est --ansible"
+	echo ""
+
+# si option --infos
+elif [ "$1" == "--infos" ];then
+  
+    echo ""
+	echo " notre option est --infos"
+	echo ""
+
+# si aucune option affichage de l'aide
+else
+
 echo "
 
 Options :
+		- --create : lancer des conteneurs
 
-	--create : si aucun chiffre 2 conteneurs sinon x conteneurs seront créés
+		- --drop : supprimer les conteneurs créer par le deploy.sh
+	
+		- --infos : caractéristiques des conteneurs (ip, nom, user...)
 
-	--drop : pour supprimer les conteneurs créés via ce script par ${USER}
+		- --start : redémarrage des conteneurs
 
-	--start : pour redémarrer les conteneurs
-
-	--infos : pour récapituler les infos des conteneurs (user, ip, nom...)
-
-	--ansible : pour créer une base de dev pour ansible
+		- --ansible : déploiement arborescence ansible
 
 "
+
+fi
