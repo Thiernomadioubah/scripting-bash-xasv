@@ -17,12 +17,22 @@ if [ "$1" == "--create" ];then
 	echo " notre option est --create"
 	echo ""
 
+    nb_machine=1
+    [ "$2" != "" ] && nb_machine=$2
+
+	docker run -tid --name $USERNAME-alpine alpine:latest
+    
+    echo "J'ai créé ${nb_machine} containeur(s)"
+
+
 # si option --drop
 elif [ "$1" == "--drop" ];then
 
     echo ""
 	echo " notre option est --drop"
 	echo ""
+
+    docker rm -f $USERNAME-alpine
 
 # si option --start
 elif [ "$1" == "--start" ];then
