@@ -14,7 +14,7 @@
 #si option --create
 if [ "$1" == "--create" ];then
 
-    USERNAME=$(whoami)
+    USER=$(whoami)
     nb_machine=1
     [ "$2" != "" ] && nb_machine=$2
 
@@ -23,7 +23,7 @@ if [ "$1" == "--create" ];then
 	max=0
 
   # récupération de idmax
-	idmax=`docker ps -a --format '{{ .Names}}' | awk -F "-" -v user="$USERNAME" '$0 ~ user"-debian" {print $3}' | sort -r |head -1`
+	idmax=`docker ps -a --format '{{ .Names}}' | awk -F "-" -v user="$USER" '$0 ~ user"-debian" {print $3}' | sort -r |head -1`
 
 	# redéfinition de min et max
 	min=$(($idmax + 1))
@@ -32,16 +32,16 @@ if [ "$1" == "--create" ];then
 
     echo "Creation du/des conteneur(s)"
     for i in $(seq $min $max);do
-        docker run -tid --cap-add NET_ADMIN --cap-add SYS_ADMIN --publish-all=true -v /srv/data:/srv/html -v /sys/fs/cgroup:/sys/fs/cgroup:ro --name $$USERNAME-debian-$i -h $$USERNAME-debian-$i thiern9/debian_systemd:v1.0
-		docker exec -ti $$USERNAME-debian-$i /bin/sh -c "useradd -m -p sa3tHJ3/KuYvI $USERNAME"
-		docker exec -ti $USERNAME-debian-$i /bin/sh -c "mkdir  ${HOME}/.ssh && chmod 700 ${HOME}/.ssh && chown $USERNAME:$USERNAME $HOME/.ssh"
-        docker cp $HOME/.ssh/id_rsa.pub $USERNAME-debian-$i:$HOME/.ssh/authorized_keys
-        docker exec -ti $USERNAME-debian-$i /bin/sh -c "chmod 600 ${HOME}/.ssh/authorized_keys && chown $USERNAME:$USERNAME $HOME/.ssh/authorized_keys"
-		docker exec -ti $USERNAME-debian-$i /bin/sh -c "echo '$USERNAME   ALL=(ALL) NOPASSWD: ALL'>>/etc/sudoers"
-		docker exec -ti $USERNAME-debian-$i /bin/sh -c "service ssh start"
-		echo "Conteneur $USERNAME-debian-$i créé"
+        docker run -tid --cap-add NET_ADMIN --cap-add SYS_ADMIN --publish-all=true -v /srv/data:/srv/html -v /sys/fs/cgroup:/sys/fs/cgroup:ro --name $USER-debian-$i -h $USER-debian-$i thiern9/debian_systemd:v1.0
+		docker exec -ti $USER-debian-$i /bin/sh -c "useradd -m -p sa3tHJ3/KuYvI $USER"
+		docker exec -ti $USER-debian-$i /bin/sh -c "mkdir  ${HOME}/.ssh && chmod 700 ${HOME}/.ssh && chown $USER:$USER $HOME/.ssh"
+        docker cp $HOME/.ssh/id_rsa.pub $USER-debian-$i:$HOME/.ssh/authorized_keys
+        docker exec -ti $USER-debian-$i /bin/sh -c "chmod 600 ${HOME}/.ssh/authorized_keys && chown $USER:$USER $HOME/.ssh/authorized_keys"
+		docker exec -ti $USER-debian-$i /bin/sh -c "echo '$USER   ALL=(ALL) NOPASSWD: ALL'>>/etc/sudoers"
+		docker exec -ti $USER-debian-$i /bin/sh -c "service ssh start"
+		echo "Conteneur $USER-debian-$i créé"
 
-        echo "Conteneur $$USERNAME-debian-$i créé"
+        echo "Conteneur $$USER-debian-$i créé"
     done
     
     # echo "J'ai créé ${nb_machine} containeur(s)"
@@ -50,10 +50,10 @@ if [ "$1" == "--create" ];then
 # si option --drop
 elif [ "$1" == "--drop" ];then
 
-	nb_cn=`docker ps -a --format '{{ .Names}}' | awk -F "-" -v user="$USERNAME" '$0 ~ user"-debian" {print $3}' | sort -r |head -1`
+	nb_cn=`docker ps -a --format '{{ .Names}}' | awk -F "-" -v user="$USER" '$0 ~ user"-debian" {print $3}' | sort -r |head -1`
     
 	echo "Suppression du/des conteneur(s)"
-    docker rm -f $(docker ps | grep $$USERNAME-debian | awk '{print $1}') 
+    docker rm -f $(docker ps | grep $USER-debian | awk '{print $1}') 
     echo "$nb_cn : Conteneur(s) supprimé(s)"
 
 # si option --start
@@ -61,7 +61,7 @@ elif [ "$1" == "--start" ];then
   
    
 	echo "Redémarrage du/des conteneur(s)"
-    docker start $(docker ps -a | grep $$USERNAME-debian | awk '{print $1}')
+    docker start $(docker ps -a | grep $USER-debian | awk '{print $1}')
 	echo "Fin du redémarrage"
 
 # si option --ansible
@@ -77,7 +77,7 @@ elif [ "$1" == "--infos" ];then
     echo ""
     echo "Informations des conteneurs : "
     echo ""
-	for conteneur in $(docker ps -a | grep $$USERNAME-debian | awk '{print $1}');do      
+	for conteneur in $(docker ps -a | grep $USER-debian | awk '{print $1}');do      
 		docker inspect -f '   => {{.Name}} - {{.NetworkSettings.IPAddress }}' $conteneur
 	done
 	echo ""
