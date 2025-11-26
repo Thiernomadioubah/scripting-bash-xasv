@@ -49,7 +49,7 @@ elif [ "$1" == "--drop" ];then
 	nb_cn=`docker ps -a --format '{{ .Names}}' | awk -F "-" -v user="$USER" '$0 ~ user"-debian" {print $3}' | sort -r |head -1`
     
 	echo "Suppression du/des conteneur(s)"
-    docker rm -f $(docker ps | grep $USER-debian | awk '{print $1}')
+    docker rm -f $(docker ps -a | grep $USER-debian | awk '{print $1}')
     echo "$nb_cn : Conteneur(s) supprimé(s)"
 
 # si option --start
